@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,7 +42,10 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	JTextField jtf;
 	JTable jtb;
 	JScrollPane jsp;
-	DefaultTableModel model = new DefaultTableModel();	
+	DefaultTableModel model = new DefaultTableModel();
+	JCheckBox jcb;
+	
+	
 	static List<String> mtname = new ArrayList<String>();
 	static List<String> rfname = new ArrayList<String>();
 	static int n;
@@ -54,26 +58,30 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	static int lens,lenr;
 	static double bp;
 	static double blue;
+	boolean flag;
 	public static void main(String[] args) {
 		Blue2 de = new Blue2();
 	}
 	public void saveMT(List<String> mtName) throws IOException{
 		if(!mtName.isEmpty()){
+			int jb = 0;
 			mtFile = new File[mtName.size()];
 			mtContext = new ArrayList[mtName.size()];
 			for(int i=0;i<mtName.size();i++){
 				mtContext[i] = new ArrayList<String>();
 				 mtFile[i] = new File(mtName.get(i));
 				 if(!mtFile[i].exists() || !mtFile[i].isFile()){  
-				        javax.swing.JOptionPane.showMessageDialog(null, "Desole,La path est fault！");  
+				        javax.swing.JOptionPane.showMessageDialog(null, "sorry,The path is faulT !");  
 				    } 
 				 	String temp = null;
 					BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(mtFile[i])));
 					while((temp = br.readLine())!=null){
+						jb++;
 						mtContext[i].add(temp);	
 					}
 					br.close();
 				} 
+			System.out.println();
 			}	
 	}
 	public void saveRF(List<String> rfName) throws IOException{
@@ -84,14 +92,14 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 				rfContext[i] = new ArrayList<String>();
 				 rfFile[i] = new File(rfName.get(i));
 				 if(!rfFile[i].exists() || !rfFile[i].isFile()){  
-				        javax.swing.JOptionPane.showMessageDialog(null, "Desole,La path est fault！");  
+				        javax.swing.JOptionPane.showMessageDialog(null, "sorry,The path is fault !");  
 				    } 
 				 	String temp = null;
-					BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(rfFile[i])));
-					while((temp = br.readLine())!=null){
+					BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(rfFile[i])));
+					while((temp = br1.readLine())!=null){
 						rfContext[i].add(temp);	
 					}
-					br.close();
+					br1.close();
 				} 	
 			}		
 	}
@@ -121,10 +129,18 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 						for(int e=0;e<=i;e++){
 							rf +=rfli[d+e];
 						}
-						if(mt.equalsIgnoreCase(rf)){
-							 correct[i] += 1;
-							temp.isExist = true;
+						if(flag){
+							if(mt.equalsIgnoreCase(rf)){
+								 correct[i] += 1;
+								temp.isExist = true;
+							}
 						}
+						if(!flag){
+							if(mt.equals(rf)){
+								 correct[i] += 1;
+								temp.isExist = true;
+							}
+						}			
 						rf="";
 					}
 					if(temp.isExist) break;
@@ -135,11 +151,14 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	}
 	public void calculeBlue(int n,ArrayList[] mtCon,ArrayList[] rfCon){
 			String[] rfline = new String[rfCon.length];
-			
-			for(int i=0;i<mtCon.length;i++){ 			
+			for(int i=0;i<mtCon.length;i++){ 
 				for(int j=0;j<mtCon[i].size();j++){
+//					System.out.println("mt : "+i+"-"+j+"**" +mtCon[i].get(j));
 					for(int m=0;m<rfCon.length;m++){
 						rfline[m] = rfCon[m].get(j).toString();
+//						System.out.println("rf : "+m+"-"+j+"***"+rfline[m]);
+//						if(m>0)
+//						System.out.println("*************************");
 					}	
 					for(int q=0;q<rfline.length;q++){
 						String[] s = rfline[q].split(" ");
@@ -185,6 +204,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		jl6 = new JLabel("");
 		jtf = new JTextField(10);
 		jtf.setText("4");
+		jcb = new JCheckBox("IngnorCase");
 		
 		jb1 = new JButton("Upload");
 		jb1.addActionListener(this);
@@ -221,6 +241,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		
 		jp3.add(jl4);
 		jp3.add(jtf);
+		jp3.add(jcb);
 		jp3.add(jb3);
 		
 		jp4.setLayout(new GridLayout(4,1));
@@ -249,10 +270,9 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("choix-mt")){
 			JFileChooser jfc = new JFileChooser();
-			jfc.setDialogTitle("Choix votre MT....");
+			jfc.setDialogTitle("Choose your MT....");
 			jfc.showOpenDialog(null);
-			jfc.setVisible(true);		
-				
+			jfc.setVisible(true);					
 			String filename1 = jfc.getSelectedFile().getAbsolutePath();
 			mtname.add(filename1);
 			String namelist = "";
@@ -263,7 +283,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		}
 		if(e.getActionCommand().equals("choix-rf")){
 			JFileChooser jfc = new JFileChooser();
-			jfc.setDialogTitle("Choix votre Reference....");
+			jfc.setDialogTitle("Choose your Reference....");
 			jfc.showOpenDialog(null);
 			jfc.setVisible(true);			
 			String filename1 = jfc.getSelectedFile().getAbsolutePath();
@@ -281,13 +301,14 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		}
 		if(e.getActionCommand().equals("calculer")){
 			n =Integer.parseInt(jtf.getText());
+			flag = jcb.isSelected();
+			System.out.println("flag : "+flag);
 			try {
 				saveMT(mtname);
 				saveRF(rfname);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
-			
+			}			
 			len = new int[n];
 			correct = new int[n];
 			calculeBlue(n, mtContext, rfContext);
