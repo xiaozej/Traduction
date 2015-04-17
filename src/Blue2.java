@@ -48,7 +48,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	
 	static List<String> mtname = new ArrayList<String>();
 	static List<String> rfname = new ArrayList<String>();
-	static int n;
+	static int n=4;
 	static File[] mtFile = null;
 	static File[] rfFile = null;
 	static ArrayList[] mtContext = null;
@@ -58,11 +58,29 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	static int lens,lenr;
 	static double bp;
 	static double blue;
-	boolean flag;
-	public static void main(String[] args) {
-		Blue2 de = new Blue2();
+	static boolean flag = false;
+	public static void main(String[] args) throws IOException {	
+		if (args.length == 0) {
+			Blue2 de = new Blue2();
+		}else{
+			for (int i = 0; i < args.length; i++) {
+				if(i==0){
+					mtname.add(args[i]);
+				}
+				if(i>0){
+					rfname.add(args[i]);
+				}
+			}
+			saveMT(mtname);
+			saveRF(rfname);
+			len = new int[n];
+			correct = new int[n];
+			calculeBlue(n, mtContext, rfContext);
+			
+			
+		}		
 	}
-	public void saveMT(List<String> mtName) throws IOException{
+	public static void saveMT(List<String> mtName) throws IOException{
 		if(!mtName.isEmpty()){
 			int jb = 0;
 			mtFile = new File[mtName.size()];
@@ -84,7 +102,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			System.out.println();
 			}	
 	}
-	public void saveRF(List<String> rfName) throws IOException{
+	public static void saveRF(List<String> rfName) throws IOException{
 		if(!rfName.isEmpty()){
 			rfFile = new File[rfName.size()];
 			rfContext = new ArrayList[rfName.size()];
@@ -104,7 +122,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			}		
 	}
 	
-	public void calculeUnePhase(int n,String mtline,String[] rfline){
+	public static void calculeUnePhase(int n,String mtline,String[] rfline){
 			
 		tempMt temp = new tempMt();
 		String[] mtli = mtline.split(" ");	
@@ -149,16 +167,12 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			}
 		}
 	}
-	public void calculeBlue(int n,ArrayList[] mtCon,ArrayList[] rfCon){
+	public static void calculeBlue(int n,ArrayList[] mtCon,ArrayList[] rfCon){
 			String[] rfline = new String[rfCon.length];
 			for(int i=0;i<mtCon.length;i++){ 
 				for(int j=0;j<mtCon[i].size();j++){
-//					System.out.println("mt : "+i+"-"+j+"**" +mtCon[i].get(j));
 					for(int m=0;m<rfCon.length;m++){
 						rfline[m] = rfCon[m].get(j).toString();
-//						System.out.println("rf : "+m+"-"+j+"***"+rfline[m]);
-//						if(m>0)
-//						System.out.println("*************************");
 					}	
 					for(int q=0;q<rfline.length;q++){
 						String[] s = rfline[q].split(" ");
@@ -167,16 +181,13 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 					calculeUnePhase(n, mtCon[i].get(j).toString(),rfline);
 				}
 			}
-			System.out.println("Total_length : "+ lens+"  "+lenr);
+			System.out.println("Total_length_MT :"+ lens+", Total_length_RF "+rfFile.length+" :  "+lenr);
 			for(int i=0;i<n;i++){
-				System.out.println(i+"-gram : "+correct[i]+" :"+len[i]);
-				
+				System.out.println(i+1+"-gram : "+correct[i]+" :"+len[i]);			
 			}
-			System.out.println("ref : "+rfFile.length);
 			if((rfFile.length*lens)>lenr){
 				bp = 1;
 			}else{
-				System.out.println("*************"+rfFile.length);
 				bp = Math.exp(1-((double)lenr/(rfFile.length*lens)));
 			}
 			double total = 0 ;
@@ -186,7 +197,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 				}
 			}
 			blue = bp * Math.exp((double)total/n);
-			System.out.println(total+"  "+bp+"  "+blue);
+			System.out.println("BP :"+bp +", Ratio :" +(double)(rfFile.length*lens)/lenr+", Blue :"+blue);
 	}
 	public Blue2(){
 		jp1 = new JPanel();
