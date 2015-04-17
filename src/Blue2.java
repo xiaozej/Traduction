@@ -30,6 +30,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+/* Comment */
+
 
 public class Blue2 extends JFrame implements ActionListener,MouseListener
 
