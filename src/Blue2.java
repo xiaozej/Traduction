@@ -29,7 +29,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-/*commint*/
 
 
 public class Blue2 extends JFrame implements ActionListener,MouseListener
@@ -63,6 +62,25 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 	public static void main(String[] args) throws IOException {	
 		if (args.length == 0) {
 			Blue2 de = new Blue2();
+		}
+		if(args[0].equalsIgnoreCase("-lc")){
+			flag = true;
+			
+			for (int i = 1; i < args.length; i++) {
+				if(i==1){
+					mtname.add(args[i]);
+				}
+				if(i>1){
+					rfname.add(args[i]);
+				}
+			}
+			saveMT(mtname);
+			saveRF(rfname);
+			len = new int[n];
+			correct = new int[n];
+			calculeBlue(n, mtContext, rfContext);
+			
+			
 		}else{
 			for (int i = 0; i < args.length; i++) {
 				if(i==0){
@@ -77,8 +95,6 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			len = new int[n];
 			correct = new int[n];
 			calculeBlue(n, mtContext, rfContext);
-			
-			
 		}		
 	}
 	public static void saveMT(List<String> mtName) throws IOException{
@@ -132,14 +148,30 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		for(int i=0;i<n;i++){
 			len[i] +=mtli.length-i;
 		}
-		
+		String MtNg="";
+		ArrayList[] mtNgram = new ArrayList[n];
+		for(int i=0;i<n;i++){
+			mtNgram[i] = new ArrayList<String>();
+			for(int j=0;j<mtli.length-i;j++){
+				for(int m=0;m<=i;m++){
+					MtNg += mtli[j+m];
+				}
+				mtNgram[i].add(MtNg);
+				MtNg = "";
+			}
+			for(int m=0;m<mtNgram[i].size();m++){
+				for(int p=m+1;p<mtNgram[i].size();p++){
+					if(mtNgram[i].get(m).toString().equalsIgnoreCase(mtNgram[i].get(p).toString())){
+						mtNgram[i].remove(p);
+					}
+				}
+			}
+		}
 		String mt = "";
 		String rf = "";
 		for(int i=0;i<n;i++){
-			for(int j=0;j<mtli.length-i;j++){
-				for(int m=0;m<=i;m++){
-					mt += mtli[j+m];
-				}
+			for(int j=0;j<mtNgram[i].size();j++){
+				mt = mtNgram[i].get(j).toString();
 				temp.setMt(mt);
 				temp.isExist = false;
 				for(int c=0;c<rfline.length;c++){
@@ -193,12 +225,14 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			}
 			double total = 0 ;
 			for(int i=0;i<len.length;i++){
-				if(((double)correct[i]/len[i])!=0){
+//				if(((double)correct[i]/len[i])!=0){
 					total += Math.log((double)correct[i]/len[i]);
-				}
+					System.out.println("Blue"+(i+1)+ ":" +Math.log((double)correct[i]/len[i]));
+//				}
 			}
 			blue = bp * Math.exp((double)total/n);
 			System.out.println("BP :"+bp +", Ratio :" +(double)(rfFile.length*lens)/lenr+", Blue :"+blue);
+			System.out.println("+++++++++++++"+ bp * Math.exp(1.356/n));
 	}
 	public Blue2(){
 		jp1 = new JPanel();
@@ -331,7 +365,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 				tableData[i][1]= correct[i];
 				tableData[i][2]=len[i];
 			} 
-		    Object[] columnTitle = {"N-gram" , "Count_Cor" , "Count_mots"}; 
+		    Object[] columnTitle = {"N-gram" , "Count_Cor" , "Count_words"}; 
 		    model.setDataVector(tableData, columnTitle);
 		    jtb = new JTable(model);
 		    jsp= new JScrollPane(jtb);
@@ -385,8 +419,7 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 		
 	}
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub		
