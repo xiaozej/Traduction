@@ -232,7 +232,6 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			}
 			blue = bp * Math.exp((double)total/n);
 			System.out.println("BP :"+bp +", Ratio :" +(double)(rfFile.length*lens)/lenr+", Blue :"+blue);
-			System.out.println("+++++++++++++"+ bp * Math.exp(1.356/n));
 	}
 	public Blue2(){
 		jp1 = new JPanel();
