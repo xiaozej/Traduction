@@ -227,7 +227,6 @@ public class Blue2 extends JFrame implements ActionListener,MouseListener
 			for(int i=0;i<len.length;i++){
 //				if(((double)correct[i]/len[i])!=0){
 					total += Math.log((double)correct[i]/len[i]);
-					System.out.println("Blue"+(i+1)+ ":" +Math.log((double)correct[i]/len[i]));
 //				}
 			}
 			blue = bp * Math.exp((double)total/n);
