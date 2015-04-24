@@ -46,44 +46,58 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 	DefaultTableModel model = new DefaultTableModel();
 	JCheckBox jcb;
 
-	static List<String> mtname = new ArrayList<String>();//sauvegarder des paths de fichier Mt
-	static List<String> rfname = new ArrayList<String>();//sauvegarder des paths de fichier référence 
-	static int n = 4;//initialisation N-gram 
+	static List<String> mtname = new ArrayList<String>();// sauvegarder des
+															// paths de fichier
+															// Mt
+	static List<String> rfname = new ArrayList<String>();// sauvegarder des
+															// paths de fichier
+															// référence
+	static int n = 4;// initialisation N-gram
 	static File[] mtFile = null; // créer des files selon de nombre de Mt
-	static File[] rfFile = null;// créer des files selon de nombre de référence 
+	static File[] rfFile = null;// créer des files selon de nombre de référence
 	static ArrayList[] mtContext = null;// sauvegarder des contexte de chaque Mt
-	static ArrayList[] rfContext = null;// sauvegarder des contexte de chaque référence 
-	static int[] correct;//sauvegarder des nombre des mots que Mt mérite référence  
-	static int[] len; //nombre de mots dans chaque N-gram 
-	static int lens, lenr;// nombre de mots Mt et référence 
+	static ArrayList[] rfContext = null;// sauvegarder des contexte de chaque
+										// référence
+	static int[] correct;// sauvegarder des nombre des mots que Mt mérite
+							// référence
+	static int[] len; // nombre de mots dans chaque N-gram
+	static int lens, lenr;// nombre de mots Mt et référence
 	static double bp;
 	static double blue;
 	static boolean flag = false;
 
 	public static void main(String[] args) throws IOException {
+		getoption g = new getoption(args, "lcf");
+		int c;
+		int l = 0;
+		while ((c = g.getNextOption()) != -1) {
+			switch (c) {
+			case 'l':
+			case 'c':
+				flag = true;
+				break;
+			case 'f':
+				System.out.println("vous etes ici focus");
+				break;
+			case '?':
+				break;
+			default:
+				System.out.println("c'est fault");
+				break;
+			}
+		}
 		if (args.length == 0) {
 			Blue2 de = new Blue2();
-		}else{
-		if (args[0].equalsIgnoreCase("-lc")) {
-			flag = true;
-
-			for (int i = 1; i < args.length; i++) {
-				if (i == 1) {
-					mtname.add(args[i]);
-				}
-				if (i > 1) {
-					rfname.add(args[i]);
-				}
-			}
-			saveMT(mtname);
-			saveRF(rfname);
-			calculeBlue(n, mtContext, rfContext);
 		} else {
 			for (int i = 0; i < args.length; i++) {
-				if (i == 0) {
+				if (args[i].startsWith("-")) {
+					l++;
+					continue;
+				}
+				if (i == l) {
 					mtname.add(args[i]);
 				}
-				if (i > 0) {
+				if (i > l) {
 					rfname.add(args[i]);
 				}
 			}
@@ -91,11 +105,11 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			saveRF(rfname);
 			calculeBlue(n, mtContext, rfContext);
 		}
-		}
 	}
-/*
- * lire le ficher de mt selon la path de fichier
- * */
+
+	/*
+	 * lire le ficher de mt selon la path de fichier
+	 */
 	public static void saveMT(List<String> mtName) throws IOException {
 		if (!mtName.isEmpty()) {
 			int jb = 0;
@@ -119,9 +133,10 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			}
 		}
 	}
+
 	/*
 	 * lire le ficher de référence selon la path de fichier
-	 * */
+	 */
 	public static void saveRF(List<String> rfName) throws IOException {
 		if (!rfName.isEmpty()) {
 			rfFile = new File[rfName.size()];
@@ -143,9 +158,10 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			}
 		}
 	}
+
 	/*
 	 * calculer le Blue
-	 * */
+	 */
 	public static void calculeBlue(int n, ArrayList[] mtCon, ArrayList[] rfCon) {
 		len = new int[n];
 		correct = new int[n];
@@ -180,19 +196,26 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		System.out.println("BP :" + bp + ", Ratio :" + (double) (lens) / lenr
 				+ ", Blue :" + blue);
 	}
+
 	/*
-	 * calculer chaque phase de Mt pour mériter un liste de phases de références  
-	 * */
+	 * calculer chaque phase de Mt pour mériter un liste de phases de références
+	 */
 	public static void calculeUnePhase(int n, String mtline, String[] rfline) {
 		String lcs = "";
 		String MtNg = "";
 		String rf = "";
-		Map[] Tngram = new HashMap[n];//sauvegarder chaque mots comme keys avec le nombre ce mots répétition dans la phase     
+		Map[] Tngram = new HashMap[n];// sauvegarder chaque mots comme keys avec
+										// le nombre ce mots répétition dans la
+										// phase
 		ArrayList[] mtNgram = new ArrayList[n];
 		Map[] Rngram = new HashMap[n];
-		Map RTotalNgram = new HashMap<String, Integer>();//sauvegarder tout les mots déférente avec values selon la liste de références 
+		Map RTotalNgram = new HashMap<String, Integer>();// sauvegarder tout les
+															// mots déférente
+															// avec values selon
+															// la liste de
+															// références
 		ArrayList[] rfNgram = new ArrayList[n];
-		
+
 		if (flag) {
 			lcs = mtline.toLowerCase();
 		} else {
@@ -220,7 +243,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			}
 			lenr += tem;
 		}
-	//traiter le phase de Mt
+		// traiter le phase de Mt
 		for (int i = 0; i < n; i++) {
 			Tngram[i] = new HashMap<String, Integer>();
 			mtNgram[i] = new ArrayList<String>();
@@ -243,7 +266,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				Tngram[i].put(mtNgram[i].get(m), count);
 			}
 		}
-		//traiter la liste de références
+		// traiter la liste de références
 		for (int c = 0; c < rfline.length; c++) {
 			String[] rfli = rfline[c].split(" ");
 			for (int i = 0; i < n; i++) {
@@ -291,7 +314,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				}
 			}
 		}
-		//calculer le correct[]
+		// calculer le correct[]
 		for (int i = 0; i < n; i++) {
 			Set Tkeys = Tngram[i].keySet();
 			if (Tkeys != null) {
