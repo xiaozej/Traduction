@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -79,23 +80,28 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 	static int line = 0;
 
 	public static void main(String[] args){
-		getoption g = new getoption(args, "lfd:");
+		
+		try {
+		getoption g = new getoption(args, "lhn:f:d:");
 		int c;
 		int l = 0;	
+		boolean help = false;
 		while ((c = g.getNextOption()) != -1) {
 			switch (c) {
 			case 'l':
-				System.out.println("nimabibiibibi");
 				flag = true;
+				break;
+			case 'n':
+				n = Integer.parseInt(g.getOptionArg());				
 				break;
 			case 'f':
 				flagFocus = true;				
-//				System.out.println("vous etes ici focus"+g.getOptionArg());
-//				focusname.add(g.getOptionArg());
 				break;
 			case 'd':		
 				d = Double.parseDouble(g.getOptionArg());
-//				System.out.println(d);
+				break;
+			case 'h':		
+				help = true;
 				break;
 			case '?':
 				break;
@@ -104,12 +110,22 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				break;
 			}
 		}
-		try {
+		if(help){
+			System.out.println("Executive order: Option (optional), TraductionMachine.txt reference.txt");
+			System.out.println("Choose option:-h help, -l lowercase, -f add focus, -d add weight, -n choose ngram.");
+			System.out.println("-h help you to use the Blue");
+			System.out.println("-f fichier of focus must exist");
+			System.out.println("-d 0-1 Real, defaut 0.2");
+			System.out.println("-n >=1 and Integer, defaut 4");
+			System.exit(0);
+		}
+		Pattern pattern = Pattern.compile("[0-9]");
 		if (args.length == 0) {
 			Blue2 de = new Blue2();
 		} else {			
 			for (int i = 0; i < args.length; i++) {
-				if (args[i].startsWith("-")||args[i].startsWith("0")||args[i].startsWith("1") ) {
+				
+				if (args[i].startsWith("-")||args[i].startsWith("0")||pattern.matcher(args[i]).matches()) {
 					l++;
 					continue;
 				}
@@ -142,8 +158,9 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				}		
 		}
 		} catch (Exception e) {
-			System.out.println("Choose option: -l lowercase, -f add focus, -d add weight.");
-			System.out.println("Executive order: option (optional) -l d, focus.txt, TraductionMachine.txt reference.txt");
+			System.out.println("Choose option: -l lowercase, -f add focus, -d add weight -n ngram -h help.");
+			System.out.println("Executive order: option (optional), TraductionMachine.txt reference.txt");
+			System.exit(0);
 		}
 	}
 
@@ -264,11 +281,15 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < len.length; i++) {
 			total += Math.log((double) correct[i] / len[i]);
 		}
+		
 		blue = bp * Math.exp((double) total / n);
+		if(blue<=0.0){ 
+			System.out.println(
+				"WARNING : BLUE is zero, because no correct X-gram was found. Try -n with a lower valuer.");}
 		System.out.println("BP :" + bp + ", Ratio :" + (double) (lens) / lenr
 				+ ", Blue :" + blue);
+		
 	}
-
 	/*
 	 * calculer chaque phase de Mt pour mériter un liste de phases de références
 	 */
@@ -471,8 +492,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < posFocus.length; i++) {
 			int f = Integer.parseInt(posFocus[i].toString()) - 1;
 			if (f > mtli.length) {
-				System.out.println("this is line " + line
-						+ " focus is more than lenght of phase.");
+				System.out.println("WARNING : Sentence "+line+"'s focus, position "+(i+1)+"is out of sentence border. Ignoring it");
 				continue;
 			}
 			for (int j = 0; j < focus.length; j++) {
@@ -515,23 +535,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				ngramstr = "";
 			}
 		}
-		// for(int j=0;j<n;j++){
-		// int w = ngramFocus[j].length;
-		// System.out.println(ngramFocus[j].length);
-		// for(int q = 0;q<w;q++){
-		// System.out.println(ngramMt[j][q]+" : "+ngramFocus[j][q]);
-		// }
-		// System.out.println("*********************");
-		// }
-		// for(int i=0;i<n;i++){
-		// for(int j=0;j<ngramFocus[i].length;j++){
-		// len[i] += ngramFocus[i][j];
-		// }
-		// System.out.println("***************");
-		// }
-		// for(int i=0;i<n;i++){
-		// System.out.println(len[i]);
-		// }
+
 		// traiter le phase de Mt
 		for (int i = 0; i < n; i++) {
 			Tngram[i] = new HashMap<String, Integer>();
@@ -553,27 +557,8 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 							.get(st))) + 1);
 				}
 			}
-			// Set Tkeys1 = Tngram[i].keySet();
-			// if (Tkeys1 != null) {
-			// Iterator Riterator = Tkeys1.iterator();
-			// while (Riterator.hasNext()) {
-			// String key = Riterator.next().toString();
-			// System.out.println("key :"+key +" ::"+Tngram[i].get(key));
-			// }
-			// }
-
-			// for (int m = 0; m < mtNgram[i].size(); m++) {
-			// int count = 1;
-			// for (int p = m + 1; p < mtNgram[i].size(); p++) {
-			// if (mtNgram[i].get(m).toString().equals(
-			// mtNgram[i].get(p).toString())) {
-			// count++;
-			// mtNgram[i].remove(p);
-			// }
-			// }
-			// Tngram[i].put(mtNgram[i].get(m), count);
-			// }
 		}
+		
 		// traiter la liste de références
 		for (int c = 0; c < rfline.length; c++) {
 			String[] rfli = rfline[c].split(" ");
@@ -607,36 +592,6 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 						}
 					}
 				}
-				// Set Tkeys1 = Rngram[i].keySet();
-				// if (Tkeys1 != null) {
-				// Iterator Riterator = Tkeys1.iterator();
-				// while (Riterator.hasNext()) {
-				// String key = Riterator.next().toString();
-				// System.out.println("key :"+key +" ::"+Rngram[i].get(key));
-				// }
-				// for (int m = 0; m < rfNgram[i].size(); m++) {
-				//					
-				// int count = 1;
-				// for (int p = m+1; p < rfNgram[i].size(); p++) {
-				// if (rfNgram[i].get(m).toString().equals(
-				// rfNgram[i].get(p).toString())) {
-				// count++;
-				// rfNgram[i].remove(p);
-				// }
-				// }
-				// System.out.println("getwords :"+rfNgram[i].get(m)+
-				// "  : count "+count);
-				// Rngram[i].put(rfNgram[i].get(m), count);
-				// if(c==0) RTotalNgram.put(rfNgram[i].get(m), count);
-				// if(c==0) RTotalNgram = Rngram[i];
-				// Set Tkeys1 = RTotalNgram.keySet();
-				// if (Tkeys1 != null) {
-				// Iterator Riterator = Tkeys1.iterator();
-				// while (Riterator.hasNext()) {
-				// String key = Riterator.next().toString();
-				// System.out.println("key :"+key +" ::"+RTotalNgram.get(key));
-				// }
-				// }
 			}
 			if (c > 0) {
 				for (int i = 0; i < n; i++) {
@@ -857,7 +812,6 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			n = Integer.parseInt(jtf.getText());
 			flag = jcb.isSelected();
 			flagFocus = jcb1.isSelected();
-			System.out.println("flag : " + flag);
 			try {
 				if(flagFocus){ 
 					saveFocus(focusname);
