@@ -39,11 +39,11 @@ import javax.swing.table.DefaultTableModel;
 public class Blue2 extends JFrame implements ActionListener, MouseListener
 
 {
-	JPanel jp1, jp2, jp3, jp4, jp5, jp6,jp7,jp8;
-	JLabel jl1, jl2, jl3, jl4, jl5, jl6,jl7,jl8;
+	JPanel jp1, jp2, jp3, jp4, jp5, jp6, jp7, jp8;
+	JLabel jl1, jl2, jl3, jl4, jl5, jl6, jl7, jl8;
 	List<JLabel> list = new ArrayList<JLabel>();
-	JButton jb1, jb2, jb3, jb4,jb5;
-	JTextField jt1, jt2, jt3,jt5,jt6;
+	JButton jb1, jb2, jb3, jb4, jb5;
+	JTextField jt1, jt2, jt3, jt5, jt6;
 	JTextField jtf;
 	JTable jtb;
 	JScrollPane jsp;
@@ -79,75 +79,78 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 	static boolean flagFocus = false;
 	static int line = 0;
 
-	public static void main(String[] args){
-		
+	public static void main(String[] args) {
+
 		try {
-		getoption g = new getoption(args, "lhn:f:d:");
-		int c;
-		int l = 0;	
-		boolean help = false;
-		while ((c = g.getNextOption()) != -1) {
-			switch (c) {
-			case 'l':
-				flag = true;
-				break;
-			case 'n':
-				n = Integer.parseInt(g.getOptionArg());				
-				break;
-			case 'f':
-				flagFocus = true;				
-				break;
-			case 'd':		
-				d = Double.parseDouble(g.getOptionArg());
-				break;
-			case 'h':		
-				help = true;
-				break;
-			case '?':
-				break;
-			default:
-				System.out.println("c'est fault");
-				break;
+			getoption g = new getoption(args, "lhn:f:d:");
+			int c;
+			int l = 0;
+			boolean help = false;
+			while ((c = g.getNextOption()) != -1) {
+				switch (c) {
+				case 'l':
+					flag = true;
+					break;
+				case 'n':
+					n = Integer.parseInt(g.getOptionArg());
+					break;
+				case 'f':
+					flagFocus = true;
+					break;
+				case 'd':
+					d = Double.parseDouble(g.getOptionArg());
+					break;
+				case 'h':
+					help = true;
+					break;
+				case '?':
+					break;
+				default:
+					System.out.println("c'est fault");
+					break;
+				}
 			}
-		}
-		if(help){
-			System.out.println("Executive order: Option (optional), TraductionMachine.txt reference.txt");
-			System.out.println("Choose option:-h help, -l lowercase, -f add focus, -d add weight, -n choose ngram.");
-			System.out.println("-h help you to use the Blue");
-			System.out.println("-f fichier of focus must exist");
-			System.out.println("-d 0-1 Real, defaut 0.2");
-			System.out.println("-n >=1 and Integer, defaut 4");
-			System.exit(0);
-		}
-		Pattern pattern = Pattern.compile("[0-9]");
-		if (args.length == 0) {
-			Blue2 de = new Blue2();
-		} else {			
-			for (int i = 0; i < args.length; i++) {
-				
-				if (args[i].startsWith("-")||args[i].startsWith("0")||pattern.matcher(args[i]).matches()) {
-					l++;
-					continue;
+			if (help) {
+				System.out
+						.println("Executive order: Option (optional), TraductionMachine.txt reference.txt");
+				System.out
+						.println("Choose option:-h help, -l lowercase, -f add focus, -d add weight, -n choose ngram.");
+				System.out.println("-h help you to use the Blue");
+				System.out.println("-f fichier of focus must exist");
+				System.out.println("-d 0-1 Real, defaut 0.2");
+				System.out.println("-n >=1 and Integer, defaut 4");
+				System.exit(0);
+			}
+			Pattern pattern = Pattern.compile("[0-9]");
+			if (args.length == 0) {
+				Blue2 de = new Blue2();
+			} else {
+				for (int i = 0; i < args.length; i++) {
+
+					if (args[i].startsWith("-") || args[i].startsWith("0")
+							|| pattern.matcher(args[i]).matches()) {
+						l++;
+						continue;
+					}
+					if (flagFocus) {
+						if (i == l) {
+							focusname.add(args[i]);
+						}
+						if (i == l + 1) {
+							mtname.add(args[i]);
+						}
+						if (i > l + 1) {
+							rfname.add(args[i]);
+						}
+					} else {
+						if (i == l) {
+							mtname.add(args[i]);
+						}
+						if (i > l) {
+							rfname.add(args[i]);
+						}
+					}
 				}
-				if (flagFocus) {
-					if (i == l) {
-						focusname.add(args[i]);
-					}
-					if (i == l+1) {
-						mtname.add(args[i]);
-					}
-					if (i > l+1) {
-						rfname.add(args[i]);
-					}
-				} else {
-					if (i == l) {
-						mtname.add(args[i]);
-					}
-					if (i > l) {
-						rfname.add(args[i]);
-					}
-				}
-			}		
 				saveMT(mtname);
 				saveRF(rfname);
 				if (flagFocus) {
@@ -155,11 +158,13 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 					calculeBlue(n, mtContext, rfContext);
 				} else {
 					calculeBlue(n, mtContext, rfContext);
-				}		
-		}
+				}
+			}
 		} catch (Exception e) {
-			System.out.println("Choose option: -l lowercase, -f add focus, -d add weight -n ngram -h help.");
-			System.out.println("Executive order: option (optional), TraductionMachine.txt reference.txt");
+			System.out
+					.println("Choose option: -l lowercase, -f add focus, -d add weight -n ngram -h help.");
+			System.out
+					.println("Executive order: option (optional), TraductionMachine.txt reference.txt");
 			System.exit(0);
 		}
 	}
@@ -281,15 +286,17 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < len.length; i++) {
 			total += Math.log((double) correct[i] / len[i]);
 		}
-		
+
 		blue = bp * Math.exp((double) total / n);
-		if(blue<=0.0){ 
-			System.out.println(
-				"WARNING : BLUE is zero, because no correct X-gram was found. Try -n with a lower valuer.");}
+		if (blue <= 0.0) {
+			System.out
+					.println("WARNING : BLUE is zero, because no correct X-gram was found. Try -n with a lower valuer.");
+		}
 		System.out.println("BP :" + bp + ", Ratio :" + (double) (lens) / lenr
 				+ ", Blue :" + blue);
-		
+
 	}
+
 	/*
 	 * calculer chaque phase de Mt pour mériter un liste de phases de références
 	 */
@@ -492,7 +499,9 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < posFocus.length; i++) {
 			int f = Integer.parseInt(posFocus[i].toString()) - 1;
 			if (f > mtli.length) {
-				System.out.println("WARNING : Sentence "+line+"'s focus, position "+(i+1)+"is out of sentence border. Ignoring it");
+				System.out.println("WARNING : Sentence " + line
+						+ "'s focus, position " + (i + 1)
+						+ "is out of sentence border. Ignoring it");
 				continue;
 			}
 			for (int j = 0; j < focus.length; j++) {
@@ -558,7 +567,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				}
 			}
 		}
-		
+
 		// traiter la liste de références
 		for (int c = 0; c < rfline.length; c++) {
 			String[] rfli = rfline[c].split(" ");
@@ -708,7 +717,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		jb4 = new JButton("Clear");
 		jb4.addActionListener(this);
 		jb4.setActionCommand("clear");
-		
+
 		jb5 = new JButton("Upload");
 		jb5.addActionListener(this);
 		jb5.setActionCommand("focus");
@@ -718,8 +727,8 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		jt3 = new JTextField(10);
 		jt5 = new JTextField(20);
 
-		this.setLayout(new GridLayout(7,1));
-//		this.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.setLayout(new GridLayout(7, 1));
+		// this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		jp1.add(jl1);
 		jp1.add(jt1);
 		jp1.add(jb1);
@@ -742,13 +751,12 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 		jp4.add(jl3);
 		jp4.add(jl5);
 		jp4.add(jb4);
-		
-		
+
 		jp7.add(jl7);
 		jp7.add(jt5);
 		jp7.add(jb5);
 		jp7.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
+
 		jp8.add(jl8);
 		jp8.add(jt6);
 		jp8.add(jcb1);
@@ -771,30 +779,36 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("choix-mt")) {
-			JFileChooser jfc = new JFileChooser();
-			jfc.setDialogTitle("Choose your MT....");
-			jfc.showOpenDialog(null);
-			jfc.setVisible(true);
-			String filename1 = jfc.getSelectedFile().getAbsolutePath();
-			mtname.add(filename1);
-			String namelist = "";
-			for (int i = 0; i < mtname.size(); i++) {
-				namelist += mtname.get(i) + "  ";
+		try {
+			if (e.getActionCommand().equals("choix-mt")) {
+				jt1.setText("");
+				mtname.clear();
+				JFileChooser jfc = new JFileChooser();
+				jfc.setDialogTitle("Choose your MT....");
+				jfc.showOpenDialog(null);
+				jfc.setVisible(true);
+				String filename1 = jfc.getSelectedFile().getAbsolutePath();
+				mtname.add(filename1);
+				String namelist = "";
+				for (int i = 0; i < mtname.size(); i++) {
+					namelist += mtname.get(i) + "  ";
+				}
+				jt1.setText(namelist);
 			}
-			jt1.setText(namelist);
+
+			if (e.getActionCommand().equals("focus")) {
+				jt5.setText("");
+				focusname.clear();
+				JFileChooser jfc = new JFileChooser();
+				jfc.setDialogTitle("Choose your Focus....");
+				jfc.showOpenDialog(null);
+				jfc.setVisible(true);
+				String filename1 = jfc.getSelectedFile().getAbsolutePath();
+				focusname.add(filename1);
+				jt5.setText(filename1);
+			}
+		} catch (Exception ex) {
 		}
-		
-		if (e.getActionCommand().equals("focus")) {
-			JFileChooser jfc = new JFileChooser();
-			jfc.setDialogTitle("Choose your Focus....");
-			jfc.showOpenDialog(null);
-			jfc.setVisible(true);
-			String filename1 = jfc.getSelectedFile().getAbsolutePath();
-			focusname.add(filename1);
-			jt5.setText(filename1);
-		}
-		
 		if (e.getActionCommand().equals("choix-rf")) {
 			JFileChooser jfc = new JFileChooser();
 			jfc.setDialogTitle("Choose your Reference....");
@@ -813,17 +827,17 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 			flag = jcb.isSelected();
 			flagFocus = jcb1.isSelected();
 			try {
-				if(flagFocus){ 
+				if (flagFocus) {
 					saveFocus(focusname);
-					d= Double.parseDouble(jt6.getText());
+					d = Double.parseDouble(jt6.getText());
 				}
 				saveMT(mtname);
 				saveRF(rfname);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-				calculeBlue(n, mtContext, rfContext);
-	
+			calculeBlue(n, mtContext, rfContext);
+
 			Object[][] tableData = new Object[n][3];
 			for (int i = 0; i < n; i++) {
 				tableData[i][0] = i + 1 + "gram";
@@ -867,7 +881,7 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		jp6.remove(e.getComponent());
+
 		System.out.println(e.getSource());
 		JLabel j = (JLabel) e.getSource();
 		System.out.println(j.getText());
@@ -876,8 +890,8 @@ public class Blue2 extends JFrame implements ActionListener, MouseListener
 				rfname.remove(i);
 			}
 		}
+		jp6.remove(j);
 		this.validate();
-
 	}
 
 	public void mouseEntered(MouseEvent e) {
