@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -704,6 +705,8 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		jt6.setText("0.2");
 		jtf = new JTextField(10);
 		jtf.setText("4");
+
+		
 		jcb = new JCheckBox("IngnorCase");
 		jcb1 = new JCheckBox("Use Focus");
 
@@ -812,8 +815,6 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 				focusname.add(filename1);
 				jt5.setText(filename1);
 			}
-		} catch (Exception ex) {
-		}
 		if (e.getActionCommand().equals("choix-rf")) {
 			JFileChooser jfc = new JFileChooser();
 			jfc.setDialogTitle("Choose your Reference....");
@@ -828,19 +829,34 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 			jname.addMouseListener(this);
 		}
 		if (e.getActionCommand().equals("calculer")) {
+			double m = Double.parseDouble(jtf.getText());
+			if (m<1) {
+				javax.swing.JOptionPane.showMessageDialog(null,
+						"sorry, n is integer, n >= 1, defaut n=4 !");
+				jtf.setText("4");
+				n=4;
+			}
 			n = Integer.parseInt(jtf.getText());
 			flag = jcb.isSelected();
 			flagFocus = jcb1.isSelected();
+			
 			try {
 				if (flagFocus) {
 					saveFocus(focusname);
 					d = Double.parseDouble(jt6.getText());
+					if (d<0||d>1) {
+						javax.swing.JOptionPane.showMessageDialog(null,
+								"sorry, n is real, 0<=d<=1, defaut d=0.2 !");
+						jt6.setText("0.2");
+						d=0.2;		
+					}
 				}
 				saveMT(mtname);
 				saveRF(rfname);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			line=0;
 			len = null;
 			lens = 0;
 			lenr = 0;
@@ -881,6 +897,8 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 			
 
 		}
+		} catch (Exception ex) {
+		}
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -904,7 +922,6 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void mousePressed(MouseEvent e) {
