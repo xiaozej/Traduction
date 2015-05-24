@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -51,6 +52,7 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 	DefaultTableModel model = new DefaultTableModel();
 	JCheckBox jcb;
 	JCheckBox jcb1;
+	JTextArea jaw;
 
 	static List<String> mtname = new ArrayList<String>();// sauvegarder des
 	// paths de fichier
@@ -60,6 +62,7 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 	// référence
 
 	static List<String> focusname = new ArrayList<String>();
+	static List<String> warninglist = new ArrayList<String>();
 	static int n = 4;// initialisation N-gram
 	static double d = 0.2;// initialisation N-gram
 	static File[] mtFile = null; // créer des files selon de nombre de Mt
@@ -500,9 +503,9 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		for (int i = 0; i < posFocus.length; i++) {
 			int f = Integer.parseInt(posFocus[i].toString()) - 1;
 			if (f > mtli.length) {
-				System.out.println("WARNING : Sentence " + line
-						+ " 's focus, position " + (i + 1)
-						+ " is out of sentence border. Ignoring it");
+				String warning = "WARNING : Sentence " + line+ " 's focus, position " + (i + 1)+" is out of sentence border. Ignoring it";
+				System.out.println(warning);
+				warninglist.add(warning);
 				continue;
 			}
 			for (int j = 0; j < focus.length; j++) {
@@ -725,8 +728,7 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		jt3 = new JTextField(10);
 		jt5 = new JTextField(20);
 
-		this.setLayout(new GridLayout(7, 1));
-		// this.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.setLayout(new GridLayout(8, 1));
 		jp1.add(jl1);
 		jp1.add(jt1);
 		jp1.add(jb1);
@@ -743,7 +745,6 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		jp3.add(jcb);
 		jp3.add(jb3);
 		jp3.setLayout(new FlowLayout(FlowLayout.LEFT));
-
 		jp4.setLayout(new GridLayout(3, 1));
 		jp4.add(jl6);
 		jp4.add(jl3);
@@ -758,6 +759,12 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		jp8.add(jt6);
 		jp8.add(jcb1);
 		jp8.setLayout(new FlowLayout(FlowLayout.LEFT));
+		
+		jaw = new JTextArea();
+		jaw.setForeground(Color.RED);
+		jaw.setLineWrap(true);        
+		jaw.setWrapStyleWord(true); 	
+		JScrollPane js = new JScrollPane(jaw);
 
 		this.add(jp1);
 		this.add(jp7);
@@ -766,11 +773,12 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 		this.add(jp3);
 		this.add(jp5);
 		this.add(jp4);
+		this.add(js);
 
 		this.setTitle("Blue");
-		this.setSize(500, 650);
+		this.setSize(500, 720);
 		this.setResizable(false);
-		this.setLocation(300, 50);
+		this.setLocation(450, 10);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
@@ -836,6 +844,8 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 			len = null;
 			lens = 0;
 			lenr = 0;
+			warninglist.clear();
+			jaw.setText("");
 			calculeBlue(n, mtContext, rfContext);
 
 			Object[][] tableData = new Object[n][3];
@@ -858,6 +868,17 @@ public class Blue extends JFrame implements ActionListener, MouseListener
 					+ lenr);
 			jl3.setText("   bp : " + bp);
 			jl5.setText("   Blue : " + blue);
+			if(blue==0){
+				String warning = "WARNING : BLUE is zero, because no correct X-gram was found. Try -n with a lower valuer. ";
+				warninglist.add(warning);
+			}
+			if(warninglist.size()>0){
+				for(int i=0;i<warninglist.size();i++){
+					String war = warninglist.get(i).toString()+"\r\n";
+					jaw.append(war);
+				}
+			}
+			
 
 		}
 	}
