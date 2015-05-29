@@ -129,7 +129,7 @@ public class Bleu {
 				calculerBleuDaoImpl calculerBleu = new calculerBleuDaoImpl();
 				Bleumod bleu = new Bleumod();
 				bleu = calculerBleu.calculeBleu(n, mtContext, rfContext,focus,flag);
-				System.out.println("Total_length_MT :" + bleu.getLens() + ", Total_length_RF "+" :  " + bleu.getLens());
+				System.out.println("Total_length_MT :" + bleu.getLens() + ", Total_length_RF "+" :  " + bleu.getLenr());
 				for (int i = 0; i < n; i++) {
 					System.out.println(i + 1 + "-gram : " + bleu.getCorrect()[i] + " :" + bleu.getLen()[i]);
 				}
