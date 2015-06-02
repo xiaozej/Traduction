@@ -133,7 +133,7 @@ public class Bleu {
 				for (int i = 0; i < n; i++) {
 					System.out.println(i + 1 + "-gram : " + bleu.getCorrect()[i] + " :" + bleu.getLen()[i]);
 				}
-				System.out.println("BP :" + bleu.getBp() + ", Ratio :" + (double) (bleu.getLens() / bleu.getLenr())
+				System.out.println("BP :" + bleu.getBp() + ", Ratio :" + (double) bleu.getLens() / bleu.getLenr()
 						+ ", Bleu :" + bleu.getBlue());	
 				if(calculerBleu.getWarninglist().size()>0){
 					for(int i=0;i<calculerBleu.getWarninglist().size();i++){
